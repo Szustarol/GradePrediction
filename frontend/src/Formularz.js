@@ -32,16 +32,34 @@ const Formularz = () => {
     absences: ''
   });
 
+  const [errors, setErrors] = useState({});
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value
     }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: ''
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const ageRegex = /^[0-9]+$/;
+
+    // Walidacja pola "age"
+    if (formData.age.trim() === '' || !formData.age.match(ageRegex)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        age: 'Wprowadź poprawny wiek (liczba)'
+      }));
+      return;
+    }
+
     fetch('http://localhost:8080/dane', {
       method: 'POST',
       headers: {
@@ -49,11 +67,11 @@ const Formularz = () => {
       },
       body: JSON.stringify(formData)
     })
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         console.log(data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
       });
   };
@@ -91,20 +109,33 @@ const Formularz = () => {
 
   return (
     <form onSubmit={handleSubmit} style={styles.form}>
-      {Object.entries(formData).map(([key, value]) => (
-        <div key={key} style={styles.formField}>
-          <label htmlFor={key} style={styles.label}>{formFields[key]}</label>
-          <input
-            type="text"
-            id={key}
-            name={key}
-            value={value}
-            onChange={handleChange}
-            style={styles.input}
-          />
-        </div>
-      ))}
-      <button type="submit" style={styles.button}>Wyślij</button>
+      <table>
+        <tbody>
+          {Object.entries(formData).map(([key, value]) => (
+            <tr key={key}>
+              <td>
+                <label htmlFor={key} style={styles.label}>
+                  {formFields[key]}
+                </label>
+              </td>
+              <td>
+                <input
+                  type="text"
+                  id={key}
+                  name={key}
+                  value={value}
+                  onChange={handleChange}
+                  style={styles.input}
+                />
+                {errors[key] && <span style={styles.error}>{errors[key]}</span>}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <button type="submit" style={styles.button}>
+        Wyślij
+      </button>
     </form>
   );
 };
@@ -117,9 +148,6 @@ const styles = {
     margin: 'auto',
     maxWidth: '400px'
   },
-  formField: {
-    marginBottom: '15px'
-  },
   label: {
     fontWeight: 'bold',
     marginBottom: '5px'
@@ -130,12 +158,18 @@ const styles = {
     borderRadius: '4px'
   },
   button: {
+    marginTop: '10px',
     padding: '10px 15px',
     backgroundColor: '#007bff',
     color: '#fff',
     border: 'none',
     borderRadius: '4px',
     cursor: 'pointer'
+  },
+  error: {
+    color: 'red',
+    fontSize: '0.8rem',
+    marginTop: '5px'
   }
 };
 
