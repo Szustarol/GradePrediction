@@ -1,10 +1,7 @@
 from interpret.provider import DashProvider
-import pandas as pd
-import plotly.express as px
 import dataset_metadata
 import pickle
 from interpret import show, set_visualize_provider
-import pandas as pd
 from flask import Flask, jsonify
 from flask_cors import cross_origin
 
