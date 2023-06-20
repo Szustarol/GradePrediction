@@ -1,3 +1,5 @@
+file_name = "regressor.pickle"
+
 dropped_columns = [
     'school', 'G1', 'G2', 'address'
 ]
@@ -12,7 +14,7 @@ non_influential_columns = [
 
 influential_columns = [
     'Pstatus', 'Medu', 'Fedu', 'Mjob', 'Fjob', 'guardian', 'traveltime', 'studytime',
-    'schoolsup', 'famsup', 'paid', 'activities', 
+    'schoolsup', 'famsup', 'paid', 'activities',
     'higher', 'internet', 'romantic', 'famrel', 'freetime', 'goout', 'Dalc',
     'Walc', 'health', 'absences',
 ]
