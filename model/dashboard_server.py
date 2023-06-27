@@ -4,6 +4,7 @@ import pickle
 from interpret import show, set_visualize_provider
 from flask import Flask, jsonify, request, redirect
 from flask_cors import cross_origin
+from dataset_metadata import column_description
 import pandas as pd
 import plotly
 with open(dataset_metadata.file_name, 'rb') as f:
@@ -41,9 +42,23 @@ def data():
                'health', 'absences']
     df = pd.DataFrame(columns=columns)
     df = df.append(request.json, ignore_index=True)
-    explanation = regressor.explain_local(df)
-    return plotly.io.to_html(explanation.visualize(0))
+    explanation = regressor.explain_local(df).visualize(0)
+    explanation['data'][0]['marker']['color'] = explanation['data'][0]['marker']['color'][:-1]
+    explanation['data'][0]['x'] = explanation['data'][0]['x'][:-1]
+    explanation['data'][0]['y'] = explanation['data'][0]['y'][:-1]
 
+    r_max = max(explanation['data'][0]['x'])*1.1
+    r_min = min(explanation['data'][0]['x'])*1.1
+    explanation['layout']['xaxis']['range'] = [r_min, r_max]
+    html_plot = plotly.io.to_html(explanation)
+    html_plot = html_plot.replace("Predicted", "Przewidywana ocena w procentach: ").\
+                    replace("Local Explanation", "Wyjaśnienie wyniku")
+    for column, desc in column_description.items():
+        html_plot = html_plot.replace(f"{column} (", f"{desc} (")
+        html_plot = html_plot.replace(f"{column} &", f"{desc} &")
+        html_plot = html_plot.replace(f"& {column}", f"& {desc}")
+    html_plot = html_plot.replace("Contribution to Prediction", "Wpływ na wynik")
+    return html_plot
     # print(df)
     # print(request.json)
     # return redirect("http://localhost:3000/dashboard")

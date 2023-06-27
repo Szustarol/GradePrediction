@@ -24,8 +24,8 @@ def main():
         regressor = pickle.load(regressor_file) 
 
     explanation = regressor.explain_local(sample)
+    print(explanation.data)
     vis = explanation.visualize(0)
-    vis.show()
 
 if __name__ == "__main__":
     main()
