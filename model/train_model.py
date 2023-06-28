@@ -26,6 +26,7 @@ def main():
     for idx in range(10):
         dataset_train_X, dataset_train_y = shuffle(dataset_train_X, dataset_train_y)
         regressor = ExplainableBoostingRegressor(early_stopping_rounds=300)
+        print(dataset_train_X.columns)
         regressor.fit(dataset_train_X, dataset_train_y)
         score = regressor.score(dataset_train_X, dataset_train_y)
         print(f"Model {idx+1}, score: {score:1f}")
